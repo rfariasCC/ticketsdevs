@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ticketera Desarrollo - Conci Carpinella</title>
+  <style>
+    :root {
+      --brand: #1f2980bb;
+      --brand-dark: #6200b3e1;
+      --bg: #f3f6f9;
+      --card: #fff;
+      --text: #333;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      background: var(--bg);
+    }
+
+    header {
+      background: var(--brand);
+      color: #fff;
+      padding: 18px 12px;
+      text-align: center;
+    }
+
+    .wrapper {
+      max-width: 980px;
+      margin: 24px auto;
+      padding: 0 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    @media (min-width:960px) {
+      .grid {
+        grid-template-columns: 1.1fr .9fr;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, .08);
+    }
+
+    form {
+      max-width: 560px;
+    }
+
+    h2 {
+      margin: 8px 0 16px;
+      color: var(--text);
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 6px;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 12px;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .btn:hover {
+      background: var(--brand-dark);
+    }
+
+    .success {
+      text-align: center;
+      color: green;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .pill {
+      display: inline-block;
+      background: #eef5ff;
+      color: #6d1dee;
+      border: 1px solid #cfe1ff;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .status-row>* {
+      flex: 1;
+    }
+
+    .muted {
+      color: #666;
+      font-size: 13px;
+    }
+
+    .result {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #e3e8ef;
+      border-radius: 8px;
+      background: #fafcff;
+    }
+
+    .spinner {
+      display: none;
+      margin-top: 10px;
+    }
+  </style>
+  <link rel="icon" type="image/png" href="developer.png">
+</head>
+
+<body>
+  <header>
+    <h1>Área de Desarrollo - Conci Carpinella</h1>
+
+
+  </header>
+
+  <div class="wrapper">
+    <div class="grid">
+      <!-- Cargar nuevo ticket -->
+      <div class="card">
+        <h2>Nuevo Ticket • <span class="pill" id="areaPill">Desarrollo de Conci Carpinella</span></h2>
+
+        <form id="ticketForm">
+          <!-- campos ocultos automáticos -->
+          <input type="hidden" name="area" id="areaInput" value="Desarrollo de Conci Carpinella" />
+          <input type="hidden" name="numero" id="numeroInput" value="99" />
+          <input type="hidden" name="entities_id" id="entityInput" value="5" />
+
+          <label>Nombre completo:</label>
+          <input type="text" name="nombre" placeholder="Ej: Rodrigo" required>
+
+          <label>Sector:</label>
+          <input type="text" name="sector" placeholder="Ej: Desarrollo" required>
+
+          <label>Contacto (Email):</label>
+          <input type="email" name="Email" placeholder="Ej: conci@gmail.com" required>
+
+          <label>Número de contacto (Celular):</label>
+          <input type="tel" name="celular" placeholder="Ej: 3512345678" pattern="[0-9]{10,13}" required>
+
+          <label>Descripción del problema:</label>
+          <textarea name="descripcion" rows="4" placeholder="Ej: Describa aquí su inconveniente" required></textarea>
+
+          <label>Prioridad:</label>
+          <select name="prioridad" required>
+            <option value="2">Baja</option>
+            <option value="3">Media</option>
+            <option value="4">Alta</option>
+          </select>
+
+          <label>Adjuntar imagen/es (opcional):</label>
+          <input type="file" name="imagenes[]" accept="image/*" multiple>
+
+          <button class="btn" type="submit">Enviar Ticket</button>
+          <p class="success" id="successMsg">✅ Ticket enviado correctamente</p>
+        </form>
+      </div>
+
+      <!-- Consultar estado de ticket -->
+      <div class="card">
+        <h2>Consultar estado de un ticket</h2>
+        <div class="status-row">
+          <div>
+            <label>Número de ticket:</label>
+            <input type="number" id="ticketIdInput" placeholder="Ej: 526" min="1" required>
+          </div>
+        </div>
+        <button class="btn" id="checkBtn" style="margin-top:12px;">Consultar</button>
+        <div class="spinner" id="spinner">Consultando…</div>
+        <div class="result" id="statusResult" style="display:none;"></div>
+        <p class="muted">Tip: ingresá el número que ves en GLPI (columna “ID”).</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const formEl = document.getElementById("ticketForm");
+    const successMsg = document.getElementById("successMsg");
+
+    formEl.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const areaInput = document.getElementById('areaInput');
+      const numeroInput = document.getElementById('numeroInput');
+      const entityInput = document.getElementById('entityInput');
+
+      if (!areaInput.value || !numeroInput.value || !entityInput.value) {
+        alert("Faltan datos internos del área.");
+        return;
+      }
+
+      const formData = new FormData(formEl);
+
+      try {
+        const resp = await fetch("https://expert-profound-whale.ngrok-free.app/webhook-test/GLPI", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await resp.json();
+
+        if (resp.ok && data.success) {
+          alert(`✅ Ticket #${data.ticket_id} creado con éxito`);
+          window.location.reload();
+        } else {
+          alert(`❌ Error al crear el ticket: ${data.message || 'Intente nuevamente.'}`);
+        }
+
+      } catch (err) {
+        alert("❌ No se pudo conectar con el servidor.");
+        console.error(err);
+      }
+    });
+
+    const STATUS_ENDPOINT = "https://expert-profound-whale.ngrok-free.app/webhook-test/GLPI-status";
+
+    const statusMap = {
+      1: "Nuevo",
+      2: "En curso (asignado)",
+      3: "En curso (planificado)",
+      4: "En espera",
+      5: "Resuelto",
+      6: "Cerrado"
+    };
+
+    const checkBtn = document.getElementById('checkBtn');
+    const ticketIdInput = document.getElementById('ticketIdInput');
+    const statusResult = document.getElementById('statusResult');
+    const spinner = document.getElementById('spinner');
+
+    checkBtn.addEventListener('click', async () => {
+      const id = ticketIdInput.value.trim();
+      if (!id) {
+        alert("Ingresá un número de ticket.");
+        return;
+      }
+
+      statusResult.style.display = 'none';
+      spinner.style.display = 'block';
+      checkBtn.disabled = true;
+
+      try {
+        const resp = await fetch(`${STATUS_ENDPOINT}?ticket_id=${encodeURIComponent(id)}`);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+        const data = await resp.json();
+
+        if (data && data.ok === false) {
+          statusResult.innerHTML = `<b>Ticket #${id}</b><br><b>Error:</b> ${data.message || 'No encontrado o sin permisos'}`;
+          statusResult.style.display = 'block';
+          return;
+        }
+
+        const code =
+          (typeof data.status === 'object' && data.status !== null)
+            ? Number(data.status.id)
+            : (data.status != null ? Number(data.status) : null);
+
+        const label =
+          data.status_label ||
+          (data.status && data.status.name) ||
+          statusMap[code] || "Desconocido";
+
+        const mod = data.date_mod || data.date_modification || data.last_update || "-";
+
+        statusResult.innerHTML = `
+          <b>Ticket #${id}</b><br>
+          <b>Estado:</b> ${label}<br>
+          <b>Última actualización:</b> ${mod}
+          ${data.priority ? `<br><b>Prioridad:</b> ${data.priority}` : ""}
+          ${data.category ? `<br><b>Categoría:</b> ${data.category}` : ""}
+        `;
+        statusResult.style.display = 'block';
+
+      } catch (e) {
+        statusResult.innerHTML = `<b>Ticket #${id}</b><br><b>Error:</b> No se pudo consultar el estado.`;
+        statusResult.style.display = 'block';
+      } finally {
+        spinner.style.display = 'none';
+        checkBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+
+</html>
