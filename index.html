@@ -236,7 +236,7 @@
       const formData = new FormData(formEl);
 
       try {
-        const resp = await fetch("https://expert-profound-whale.ngrok-free.app/webhook-test/GLPI", {
+        const resp = await fetch("https://expert-profound-whale.ngrok-free.app/webhook/GLPI", {
           method: "POST",
           body: formData
         });
@@ -256,7 +256,7 @@
       }
     });
 
-    const STATUS_ENDPOINT = "https://expert-profound-whale.ngrok-free.app/webhook-test/GLPI-status";
+    const STATUS_ENDPOINT = "https://expert-profound-whale.ngrok-free.app/webhook/GLPI-status";
 
     const statusMap = {
       1: "Nuevo",
@@ -329,4 +329,5 @@
 
 
 </html>
+
 
